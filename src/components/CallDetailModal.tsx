@@ -1,8 +1,9 @@
 
 import React, { useState } from 'react';
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CallLog } from '@/types/calls';
+import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 
 interface CallDetailModalProps {
   isOpen: boolean;
@@ -26,6 +27,11 @@ const CallDetailModal: React.FC<CallDetailModalProps> = ({ isOpen, onClose, call
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-w-5xl p-0 overflow-hidden bg-background border-secondary">
+        {/* Adding DialogTitle for accessibility */}
+        <VisuallyHidden>
+          <DialogTitle>Call Details</DialogTitle>
+        </VisuallyHidden>
+        
         <div className="flex items-center justify-between bg-card p-4 border-b border-secondary">
           <div className="flex items-center gap-2">
             <span className="p-1 bg-secondary rounded-md">
@@ -72,19 +78,24 @@ const CallDetailModal: React.FC<CallDetailModalProps> = ({ isOpen, onClose, call
         <div className="p-6">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold">Recording</h3>
-            <div className="flex items-center gap-2">
-              <div className="text-xl font-medium">{playbackRate}</div>
-              <button onClick={() => setPlaybackRate(prev => prev === "1.0x" ? "1.5x" : "1.0x")} className="p-1 hover:bg-secondary rounded-md">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <polyline points="18 15 12 9 6 15" />
-                </svg>
-              </button>
-              <button onClick={() => setPlaybackRate(prev => prev === "1.0x" ? "0.5x" : "1.0x")} className="p-1 hover:bg-secondary rounded-md">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <polyline points="6 9 12 15 18 9" />
-                </svg>
-              </button>
-            </div>
+            {call.recordingUrl ? (
+              <div className="flex items-center gap-2">
+                <audio src={call.recordingUrl} controls className="hidden" id="audioPlayer" />
+                <div className="text-xl font-medium">{playbackRate}</div>
+                <button onClick={() => setPlaybackRate(prev => prev === "1.0x" ? "1.5x" : "1.0x")} className="p-1 hover:bg-secondary rounded-md">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="18 15 12 9 6 15" />
+                  </svg>
+                </button>
+                <button onClick={() => setPlaybackRate(prev => prev === "1.0x" ? "0.5x" : "1.0x")} className="p-1 hover:bg-secondary rounded-md">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="6 9 12 15 18 9" />
+                  </svg>
+                </button>
+              </div>
+            ) : (
+              <div className="text-sm text-muted-foreground">No recording available</div>
+            )}
           </div>
 
           <div className="mb-10">
@@ -130,7 +141,7 @@ const CallDetailModal: React.FC<CallDetailModalProps> = ({ isOpen, onClose, call
                 </svg>
               </button>
               
-              <div className="font-mono text-muted-foreground">00:22</div>
+              <div className="font-mono text-muted-foreground">{call.duration || "00:00"}</div>
               
               <div className="ml-auto">
                 <button className="px-4 py-1 flex items-center gap-2 bg-secondary hover:bg-secondary/70 transition-colors rounded-md">
@@ -154,6 +165,13 @@ const CallDetailModal: React.FC<CallDetailModalProps> = ({ isOpen, onClose, call
                 </svg>
                 Transcripts
               </TabsTrigger>
+              <TabsTrigger value="summary" className="data-[state=active]:bg-primary/10">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
+                  <polyline points="9 11 12 14 22 4" />
+                  <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+                </svg>
+                Summary
+              </TabsTrigger>
               <TabsTrigger value="logs" className="data-[state=active]:bg-primary/10">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
                   <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
@@ -172,43 +190,47 @@ const CallDetailModal: React.FC<CallDetailModalProps> = ({ isOpen, onClose, call
                 </svg>
                 Analysis
               </TabsTrigger>
-              <TabsTrigger value="messages" className="data-[state=active]:bg-primary/10">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
-                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-                  <line x1="9" y1="9" x2="15" y2="9" />
-                  <line x1="9" y1="13" x2="15" y2="13" />
-                  <line x1="9" y1="17" x2="13" y2="17" />
-                </svg>
-                Messages
-              </TabsTrigger>
             </TabsList>
             
             <TabsContent value="transcripts" className="mt-0">
-              <div className="p-5 border border-secondary rounded-md">
+              <div className="p-5 border border-secondary rounded-md max-h-[400px] overflow-y-auto">
                 <h3 className="text-lg font-semibold mb-4">Transcript</h3>
                 
-                {/* AI message */}
-                <div className="mb-6">
-                  <div className="text-teal-400 font-medium mb-1">AI</div>
-                  <div className="text-gray-200">
-                    Neuromonitoring Associates. This is Zen. How can I help you?
+                {call.transcript ? (
+                  <div className="space-y-6">
+                    {call.transcript.split('\n').map((line, index) => {
+                      if (!line.trim()) return null;
+                      const isAI = line.toLowerCase().includes('ai:') || 
+                                   line.toLowerCase().includes('assistant:') || 
+                                   index % 2 === 0;
+                      
+                      const speaker = isAI ? "AI" : "User";
+                      const content = line.includes(':') ? 
+                        line.substring(line.indexOf(':') + 1).trim() : 
+                        line.trim();
+                        
+                      return (
+                        <div key={index} className="mb-6">
+                          <div className={`${isAI ? 'text-teal-400' : 'text-blue-400'} font-medium mb-1`}>
+                            {speaker}
+                          </div>
+                          <div className="text-gray-200">
+                            {content}
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
-                </div>
-                
-                {/* User message */}
-                <div className="mb-6">
-                  <div className="text-blue-400 font-medium mb-1">User</div>
-                  <div className="text-gray-200">
-                    Alan, how are you?
-                  </div>
-                </div>
-                
-                {/* AI message */}
-                <div className="mb-6">
-                  <div className="text-teal-400 font-medium mb-1">AI</div>
-                  <div className="text-gray-200">
-                    Thank you for asking, Alan. I'm here and ready to assist you. Would you like to schedule, reschedule, or cancel a case today?
-                  </div>
+                ) : (
+                  <div className="text-muted-foreground">No transcript available</div>
+                )}
+              </div>
+            </TabsContent>
+
+            <TabsContent value="summary">
+              <div className="border border-secondary rounded-md p-5">
+                <div className="text-sm">
+                  {call.summary || "No summary available for this call."}
                 </div>
               </div>
             </TabsContent>
@@ -225,14 +247,6 @@ const CallDetailModal: React.FC<CallDetailModalProps> = ({ isOpen, onClose, call
               <div className="border border-secondary rounded-md p-5">
                 <div className="text-sm text-muted-foreground">
                   <p>Call analysis will be displayed here.</p>
-                </div>
-              </div>
-            </TabsContent>
-            
-            <TabsContent value="messages">
-              <div className="border border-secondary rounded-md p-5">
-                <div className="text-sm text-muted-foreground">
-                  <p>Message details will be displayed here.</p>
                 </div>
               </div>
             </TabsContent>

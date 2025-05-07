@@ -1,4 +1,3 @@
-
 export type CallDirection = 'inbound' | 'outbound';
 export type EndReason = 'Customer Ended Call' | 'Twilio Connection Failed' | 'Silence Timed Out';
 export type SuccessStatus = 'success' | 'fail' | 'n/a';
@@ -14,8 +13,12 @@ export interface CallLog {
   success: SuccessStatus;
   startTime: string | null;
   duration: string | null;
+  transcript?: string;
+  summary?: string;
+  recordingUrl?: string;
 }
 
+// Keep mock data for fallback
 export const mockCallLogs: CallLog[] = [
   {
     callId: 'fe8a74b7-860f-4163-9b5d-65c36479c34a',

@@ -1,21 +1,88 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import StatusCard from '@/components/StatusCard';
 import CallLogTable from '@/components/CallLogTable';
 import CallDetailModal from '@/components/CallDetailModal';
-import { mockCallLogs, CallLog, getCallStats } from '@/types/calls';
+import { CallLog, getCallStats } from '@/types/calls';
 import { Button } from '@/components/ui/button';
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
+import { fetchCallLogs, mapApiDataToCallLog } from '@/services/apiService';
+import { useToast } from '@/components/ui/use-toast';
 
 const Index = () => {
   const [selectedFilter, setSelectedFilter] = useState<'all' | 'transferred' | 'successful' | 'failed'>('all');
   const [selectedCall, setSelectedCall] = useState<CallLog | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [callLogs, setCallLogs] = useState<CallLog[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const { toast } = useToast();
+  
+  const pageSize = 10;
 
-  const callStats = getCallStats(mockCallLogs);
+  useEffect(() => {
+    const loadCallLogs = async () => {
+      setLoading(true);
+      try {
+        const result = await fetchCallLogs(currentPage, pageSize);
+        const mappedData = mapApiDataToCallLog(result.calls);
+        setCallLogs(mappedData);
+        setTotalPages(result.totalPages);
+      } catch (error) {
+        console.error("Failed to load call logs", error);
+        toast({
+          title: "Error loading calls",
+          description: "Could not load call logs from the API. Using mock data instead.",
+          variant: "destructive",
+        });
+        // Fallback to mock data when API fails
+        import('@/types/calls').then(({ mockCallLogs }) => {
+          setCallLogs(mockCallLogs);
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadCallLogs();
+  }, [currentPage, toast]);
+
+  const callStats = getCallStats(callLogs);
 
   const handleCallRowClick = (call: CallLog) => {
     setSelectedCall(call);
     setIsDetailModalOpen(true);
+  };
+
+  const handlePageChange = (page: number) => {
+    if (page < 1 || page > totalPages) return;
+    setCurrentPage(page);
+  };
+
+  const renderPaginationItems = () => {
+    const items = [];
+    const maxVisible = 5;
+    let startPage = Math.max(1, currentPage - Math.floor(maxVisible / 2));
+    let endPage = Math.min(totalPages, startPage + maxVisible - 1);
+    
+    if (endPage - startPage + 1 < maxVisible) {
+      startPage = Math.max(1, endPage - maxVisible + 1);
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+      items.push(
+        <PaginationItem key={i}>
+          <PaginationLink 
+            isActive={currentPage === i} 
+            onClick={() => handlePageChange(i)}
+          >
+            {i}
+          </PaginationLink>
+        </PaginationItem>
+      );
+    }
+    return items;
   };
 
   return (
@@ -127,13 +194,53 @@ const Index = () => {
           </div>
         </div>
 
-        {/* Call logs table */}
-        <div className="overflow-hidden rounded-md border border-secondary">
-          <CallLogTable 
-            logs={mockCallLogs} 
-            onRowClick={handleCallRowClick}
-          />
-        </div>
+        {/* Loading state */}
+        {loading ? (
+          <div className="p-12 flex items-center justify-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+          </div>
+        ) : (
+          <>
+            {/* Call logs table */}
+            <div className="overflow-hidden rounded-md border border-secondary">
+              <CallLogTable 
+                logs={callLogs} 
+                onRowClick={handleCallRowClick}
+              />
+            </div>
+            
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="mt-6">
+                <Pagination>
+                  <PaginationContent>
+                    <PaginationItem>
+                      <PaginationPrevious 
+                        href="#" 
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handlePageChange(currentPage - 1);
+                        }}
+                      />
+                    </PaginationItem>
+                    
+                    {renderPaginationItems()}
+                    
+                    <PaginationItem>
+                      <PaginationNext 
+                        href="#" 
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handlePageChange(currentPage + 1);
+                        }}
+                      />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
+              </div>
+            )}
+          </>
+        )}
 
         {/* Call details modal */}
         <CallDetailModal
