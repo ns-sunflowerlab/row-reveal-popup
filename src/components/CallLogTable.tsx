@@ -8,24 +8,23 @@ interface CallLogTableProps {
   logs: CallLog[];
   onRowClick: (log: CallLog) => void;
 }
-
 const CallLogTable: React.FC<CallLogTableProps> = ({ logs, onRowClick }) => {
+  console.log(logs)
+
   return (
     <div className="rounded-md overflow-hidden">
       <Table>
         <TableHeader className="bg-secondary">
           <TableRow>
-            <TableHead className="w-12">
-              <input type="checkbox" className="h-4 w-4 rounded border-muted" />
-            </TableHead>
-            <TableHead className="w-44">Call ID</TableHead>
-            <TableHead className="w-44">Assistant</TableHead>
-            <TableHead className="w-52">Assistant Phone Number</TableHead>
+         
+            <TableHead className="w-44">Batch ID</TableHead>
+            <TableHead className="w-44">Customer Name</TableHead>
             <TableHead className="w-52">Customer Phone Number</TableHead>
-            <TableHead className="w-48">Ended Reason</TableHead>
+            <TableHead className="w-48">Label</TableHead>
             <TableHead className="w-44">Success Evaluation</TableHead>
             <TableHead className="w-44">Start Time</TableHead>
             <TableHead className="w-28">Duration</TableHead>
+
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -35,9 +34,7 @@ const CallLogTable: React.FC<CallLogTableProps> = ({ logs, onRowClick }) => {
               className="hover:bg-secondary/30 cursor-pointer transition-colors"
               onClick={() => onRowClick(log)}
             >
-              <TableCell>
-                <input type="checkbox" className="h-4 w-4 rounded border-muted" />
-              </TableCell>
+         
               <TableCell className="font-mono text-xs">
                 <div className="flex items-center gap-2">
                   {log.callId.substring(0, 12)}...
@@ -51,15 +48,8 @@ const CallLogTable: React.FC<CallLogTableProps> = ({ logs, onRowClick }) => {
               </TableCell>
               <TableCell>
                 <div className="flex items-center gap-1.5">
-                  {log.assistant}
+                  {log.assistantId}
                 </div>
-                <div className="text-xs text-muted-foreground font-mono mt-0.5">
-                  {log.assistantId.substring(0, 12)}...
-                </div>
-              </TableCell>
-              <TableCell>
-                <div>{log.assistantPhone}</div>
-                <div className="text-xs text-muted-foreground mt-0.5">Zinniax Number</div>
               </TableCell>
               <TableCell>
                 <div className="flex items-center justify-between">
@@ -70,13 +60,23 @@ const CallLogTable: React.FC<CallLogTableProps> = ({ logs, onRowClick }) => {
                 </div>
               </TableCell>
               <TableCell>
-                {log.endReason === 'Customer Ended Call' ? (
-                  <CallBadge variant="customer-ended">Customer Ended Call</CallBadge>
-                ) : log.endReason === 'Twilio Connection Failed' ? (
-                  <CallBadge variant="twilio-failed">Twilio Connection Failed</CallBadge>
-                ) : (
-                  <CallBadge variant="silence-timeout">Silence Timed Out</CallBadge>
-                )}
+              {log.endReason === 'SCHEDULE_SUCCESS' ? (
+                <CallBadge variant="success">SCHEDULED</CallBadge>
+              ) : log.endReason === 'USER_ASKED_FOR_HUMAN' ? (
+                <CallBadge variant="customer-ended">TRANSFFERED</CallBadge>
+              ) : log.endReason === 'SCHEDULE_FAIL' ? (
+                <CallBadge variant="twilio-failed">SCHEDULE FAIL</CallBadge>
+              ) : log.endReason === 'RESCHEDULE_SUCCESS' ? (
+                <CallBadge variant="success">RESCHEDULE SUCCESS</CallBadge>
+              ) : log.endReason === 'RESCHEDULE_FAIL' ? (
+                <CallBadge variant="twilio-failed">RESCHEDULE FAIL</CallBadge>
+              ) : log.endReason === 'CANCEL_SUCCESS' ? (
+                <CallBadge variant="success">CANCEL SUCCESS</CallBadge>
+              ) : log.endReason === 'CANCEL_FAIL' ? (
+                <CallBadge variant="twilio-failed">CANCEL FAIL</CallBadge>
+              ) : (
+                <CallBadge variant="silence-timeout">N/A</CallBadge>
+              )}
               </TableCell>
               <TableCell>
                 {log.success === 'fail' ? (
