@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -23,65 +22,65 @@ export default {
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
 				ring: 'hsl(var(--ring))',
-				background: 'hsl(var(--background))',
-				foreground: 'hsl(var(--foreground))',
+				background: '#FFFFFF', // Light background color
+				foreground: '#1F2937', // Dark text color for contrast
 				primary: {
-					DEFAULT: 'hsl(var(--primary))',
-					foreground: 'hsl(var(--primary-foreground))'
+					DEFAULT: '#0072ce', // Primary color
+					foreground: '#FFFFFF' // White text for primary elements
 				},
 				secondary: {
-					DEFAULT: 'hsl(var(--secondary))',
-					foreground: 'hsl(var(--secondary-foreground))'
+					DEFAULT: '#005bb5', // Slightly darker shade of primary for secondary elements
+					foreground: '#FFFFFF' // White text for secondary elements
 				},
 				destructive: {
-					DEFAULT: 'hsl(var(--destructive))',
-					foreground: 'hsl(var(--destructive-foreground))'
+					DEFAULT: '#e25c5c', // Red for destructive actions
+					foreground: '#FFFFFF' // White text for destructive elements
 				},
 				muted: {
-					DEFAULT: 'hsl(var(--muted))',
-					foreground: 'hsl(var(--muted-foreground))'
+					DEFAULT: '#F3F4F6', // Muted background color
+					foreground: '#FFFFFF' // Muted text color
 				},
 				accent: {
-					DEFAULT: 'hsl(var(--accent))',
-					foreground: 'hsl(var(--accent-foreground))'
+					DEFAULT: '#37b9bc', // Accent color (teal)
+					foreground: '#FFFFFF' // White text for accent elements
 				},
 				popover: {
-					DEFAULT: 'hsl(var(--popover))',
-					foreground: 'hsl(var(--popover-foreground))'
+					DEFAULT: '#F9FAFB', // Popover background color
+					foreground: '#1F2937' // Popover text color
 				},
 				card: {
-					DEFAULT: 'hsl(var(--card))',
-					foreground: 'hsl(var(--card-foreground))'
+					DEFAULT: '#F9FAFB', // Card background color
+					foreground: '#FFFFFF' // Card text color
 				},
 				sidebar: {
-					DEFAULT: 'hsl(var(--sidebar-background))',
-					foreground: 'hsl(var(--sidebar-foreground))',
-					primary: 'hsl(var(--sidebar-primary))',
-					'primary-foreground': 'hsl(var(--sidebar-primary-foreground))',
-					accent: 'hsl(var(--sidebar-accent))',
-					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
-					border: 'hsl(var(--sidebar-border))',
-					ring: 'hsl(var(--sidebar-ring))'
+					DEFAULT: '#E5E7EB', // Sidebar background color
+					foreground: '#1F2937', // Sidebar text color
+					primary: '#0072ce', // Sidebar primary color
+					'primary-foreground': '#FFFFFF', // Sidebar primary text color
+					accent: '#005bb5', // Sidebar accent color
+					'accent-foreground': '#FFFFFF', // Sidebar accent text color
+					border: '#D1D5DB', // Sidebar border color
+					ring: '#93C5FD' // Sidebar ring color
 				},
 				success: {
-					DEFAULT: '#2ed47a',
-					foreground: '#ffffff'
+					DEFAULT: '#2ed47a', // Green for success
+					foreground: '#FFFFFF' // White text for success elements
 				},
 				failed: {
-					DEFAULT: '#e25c5c',
-					foreground: '#ffffff'
+					DEFAULT: '#e25c5c', // Red for failed actions
+					foreground: '#FFFFFF' // White text for failed elements
 				},
 				warning: {
-					DEFAULT: '#f7a547',
-					foreground: '#ffffff'
+					DEFAULT: '#f7a547', // Orange for warnings
+					foreground: '#FFFFFF' // White text for warning elements
 				},
 				inbound: {
-					DEFAULT: '#37b9bc',
-					foreground: '#ffffff'
+					DEFAULT: '#37b9bc', // Teal for inbound actions
+					foreground: '#FFFFFF' // White text for inbound elements
 				},
 				outbound: {
-					DEFAULT: '#f7a547',
-					foreground: '#ffffff'
+					DEFAULT: '#f7a547', // Orange for outbound actions
+					foreground: '#FFFFFF' // White text for outbound elements
 				}
 			},
 			borderRadius: {

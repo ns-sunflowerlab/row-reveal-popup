@@ -15,27 +15,27 @@ const CallLogTable: React.FC<CallLogTableProps> = ({ logs, onRowClick }) => {
     <div className="rounded-md overflow-hidden">
       <Table>
         <TableHeader className="bg-secondary">
-          <TableRow>
+          <TableRow className="font-bold">
          
-            <TableHead className="w-44">Batch ID</TableHead>
+            {/* <TableHead className="w-44">Batch ID</TableHead> */}
             <TableHead className="w-44">Customer Name</TableHead>
             <TableHead className="w-52">Customer Phone Number</TableHead>
             <TableHead className="w-48">Label</TableHead>
-            <TableHead className="w-44">Success Evaluation</TableHead>
+            {/* <TableHead className="w-44">Success Evaluation</TableHead> */}
             <TableHead className="w-44">Start Time</TableHead>
             <TableHead className="w-28">Duration</TableHead>
 
           </TableRow>
         </TableHeader>
-        <TableBody>
+        <TableBody className='font-semibold'>
           {logs.map((log) => (
             <TableRow 
               key={log.callId}
-              className="hover:bg-secondary/30 cursor-pointer transition-colors"
+              className="hover:bg-secondary/30 cursor-pointer transition-colors "
               onClick={() => onRowClick(log)}
             >
          
-              <TableCell className="font-mono text-xs">
+              {/* <TableCell className="font-mono text-xs">
                 <div className="flex items-center gap-2">
                   {log.callId.substring(0, 12)}...
                   <button className="text-muted-foreground hover:text-primary">
@@ -45,18 +45,18 @@ const CallLogTable: React.FC<CallLogTableProps> = ({ logs, onRowClick }) => {
                     </svg>
                   </button>
                 </div>
-              </TableCell>
+              </TableCell> */}
               <TableCell>
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-1.5 ">
                   {log.assistantId}
                 </div>
               </TableCell>
               <TableCell>
                 <div className="flex items-center justify-between">
-                  <div>{log.customerPhone}</div>
-                  <CallBadge variant={log.direction === 'inbound' ? 'inbound' : 'outbound'}>
+                  {log.customerPhone}
+                  {/* <CallBadge variant={log.direction === 'inbound' ? 'inbound' : 'outbound'}>
                     {log.direction === 'inbound' ? 'Inbound' : 'Outbound'}
-                  </CallBadge>
+                  </CallBadge> */}
                 </div>
               </TableCell>
               <TableCell>
@@ -78,7 +78,7 @@ const CallLogTable: React.FC<CallLogTableProps> = ({ logs, onRowClick }) => {
                 <CallBadge variant="silence-timeout">N/A</CallBadge>
               )}
               </TableCell>
-              <TableCell>
+              {/* <TableCell>
                 {log.success === 'fail' ? (
                   <CallBadge variant="fail">Fail</CallBadge>
                 ) : log.success === 'success' ? (
@@ -86,12 +86,32 @@ const CallLogTable: React.FC<CallLogTableProps> = ({ logs, onRowClick }) => {
                 ) : (
                   <span className="text-muted-foreground">N/A</span>
                 )}
+              </TableCell> */}
+              <TableCell>
+              {log.startTime
+                ? (() => {
+                    const date = new Date(log.startTime);
+                    const formatted = date.toLocaleString('en-US', {
+                      month: 'long',
+                      day: 'numeric',
+                      year: 'numeric',
+                      hour: 'numeric',
+                      minute: '2-digit',
+                      hour12: true,
+                    });
+                    return formatted; // e.g., "May 7, 2025, 8:15 PM"
+                  })()
+                : <span className="text-muted-foreground">N/A</span>}
               </TableCell>
               <TableCell>
-                {log.startTime || <span className="text-muted-foreground">N/A</span>}
-              </TableCell>
-              <TableCell>
-                {log.duration || <span className="text-muted-foreground">N/A</span>}
+              {log.duration
+                ? (() => {
+                    const totalSeconds = parseFloat(log.duration.replace('s', ''));
+                    const minutes = Math.floor(totalSeconds / 60);
+                    const seconds = Math.round(totalSeconds % 60);
+                    return `${minutes}m ${seconds}s`;
+                  })()
+                : <span className="text-muted-foreground">N/A</span>}
               </TableCell>
             </TableRow>
           ))}

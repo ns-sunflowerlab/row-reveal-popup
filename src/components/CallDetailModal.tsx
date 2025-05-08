@@ -131,14 +131,26 @@ const CallDetailModal: React.FC<CallDetailModalProps> = ({ isOpen, onClose, call
 
       <Tabs defaultValue="transcripts">
       <TabsList className="bg-secondary mb-4">
-        <TabsTrigger value="transcripts" className="data-[state=active]:bg-primary/10">
-        Transcripts
-        </TabsTrigger>
         <TabsTrigger value="summary" className="data-[state=active]:bg-primary/10">
         Summary
         </TabsTrigger>
+        <TabsTrigger value="transcripts" className="data-[state=active]:bg-primary/10">
+         Transcripts
+        </TabsTrigger>
       </TabsList>
 
+    
+      {/* Summary Tab */}
+      <TabsContent value="summary" className="mt-0">
+        <div className="p-5 border border-secondary rounded-md">
+        <h3 className="text-lg font-semibold mb-4">Summary</h3>
+        {call.summary ? (
+          <div className="text-200">{call.summary}</div>
+        ) : (
+          <div className="text-muted-foreground">No summary available.</div>
+        )}
+        </div>
+      </TabsContent>
       {/* Transcripts Tab */}
       <TabsContent value="transcripts" className="mt-0">
         <div className="p-5 border border-secondary rounded-md h-64 overflow-y-auto">
@@ -158,18 +170,6 @@ const CallDetailModal: React.FC<CallDetailModalProps> = ({ isOpen, onClose, call
           </div>
         ) : (
           <div className="text-muted-foreground">No transcript available.</div>
-        )}
-        </div>
-      </TabsContent>
-
-      {/* Summary Tab */}
-      <TabsContent value="summary" className="mt-0">
-        <div className="p-5 border border-secondary rounded-md">
-        <h3 className="text-lg font-semibold mb-4">Summary</h3>
-        {call.summary ? (
-          <div className="text-gray-200">{call.summary}</div>
-        ) : (
-          <div className="text-muted-foreground">No summary available.</div>
         )}
         </div>
       </TabsContent>

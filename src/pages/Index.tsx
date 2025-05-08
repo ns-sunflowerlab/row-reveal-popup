@@ -14,7 +14,7 @@ const Index = () => {
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1); // Current page
   const [rowsPerPage, setRowsPerPage] = useState(10); // Rows per page
-  const [totalPages, setTotalPages] = useState(0); // Total pages (from API)
+  const [totalPages, setTotalPages] = useState(5); // Total pages (from API)
   const[tenantId , setTenantId] = useState(6);
 
   // Fetch call logs from the API
@@ -33,7 +33,7 @@ const Index = () => {
       if (response.data && Array.isArray(response.data.callDetails)) {
         const apiData = response.data.callDetails.map((call: any) => ({
           callId: call.id,
-          assistantId: call.first_name,
+          assistantId: call.first_name || "N/A",
           customerPhone: call.phone,
           direction: call.line_status = 'inbound' ,
           endReason: call.label || 'N/A',
@@ -47,6 +47,7 @@ const Index = () => {
           totalCalls : response.data.totalCount || null
         }));
         setCallLogs(apiData);
+        setTotalPages(Math.ceil(response.data.totalCount / response.data.pageSize));
       } else {
         throw new Error('Invalid data format received from API');
       }
@@ -75,10 +76,10 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background text-foreground p-6">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold mb-6">AI Scheduling Logs</h1>
+        <h1 className="text-3xl font-bold mb-6">ZinniaX Scheduling Assistant Call Log</h1>
 
         {/* Stats cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        {/* <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           <StatusCard 
             title="All" 
             count={callStats.all} 
@@ -103,10 +104,10 @@ const Index = () => {
             selected={selectedFilter === 'failed'} 
             onClick={() => setSelectedFilter('failed')}
           />
-        </div>
+        </div> */}
 
         {/* Filters */}
-        <div className="flex flex-wrap gap-2 mb-6 items-center ">
+        {/* <div className="flex flex-wrap gap-2 mb-6 items-center ">
           <Button variant="outline" size="sm" className="rounded-full flex gap-1.5 items-center">
             <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="12" cy="12" r="10"/>
@@ -179,7 +180,7 @@ const Index = () => {
               </svg>
             </Button>
           </div>
-        </div>
+        </div> */}
 
         {/* Call logs table */}
         <div className="overflow-hidden rounded-md border border-secondary">
@@ -199,7 +200,7 @@ const Index = () => {
             Previous
           </button>
 
-          <span className="text-sm text-muted-foreground">
+          <span className="">
             Page {currentPage} of {totalPages}
           </span>
 
