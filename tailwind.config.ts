@@ -53,7 +53,7 @@ export default {
 					foreground: '#FFFFFF' // Card text color
 				},
 				sidebar: {
-					DEFAULT: '#E5E7EB', // Sidebar background color
+					DEFAULT: '#FFFFFF', // Sidebar background color
 					foreground: '#1F2937', // Sidebar text color
 					primary: '#0072ce', // Sidebar primary color
 					'primary-foreground': '#FFFFFF', // Sidebar primary text color

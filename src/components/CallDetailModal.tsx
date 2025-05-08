@@ -52,7 +52,7 @@ const CallDetailModal: React.FC<CallDetailModalProps> = ({ isOpen, onClose, call
 
   return (
 <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()} >
-<DialogContent className="max-w-2xl p-0 overflow-hidden bg-background border-l border-secondary flex-end" style={{ marginLeft: "18em" }}>
+<DialogContent className="max-w-3xl p-0 overflow-hidden bg-background border-l border-secondary flex-end" style={{ marginLeft: "20em", height: "90vh" }}>
 
   <div className="flex items-center justify-between bg-card p-4 border-b border-secondary">
       <div className="flex items-center justify-end gap-2">
@@ -129,7 +129,7 @@ const CallDetailModal: React.FC<CallDetailModalProps> = ({ isOpen, onClose, call
       )}
       </div>
 
-      <Tabs defaultValue="transcripts">
+      <Tabs defaultValue="summary">
       <TabsList className="bg-secondary mb-4">
         <TabsTrigger value="summary" className="data-[state=active]:bg-primary/10">
         Summary

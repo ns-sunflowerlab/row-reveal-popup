@@ -61,9 +61,9 @@ const CallLogTable: React.FC<CallLogTableProps> = ({ logs, onRowClick }) => {
               </TableCell>
               <TableCell>
               {log.endReason === 'SCHEDULE_SUCCESS' ? (
-                <CallBadge variant="success">SCHEDULED</CallBadge>
+                <CallBadge variant="success">SCHEDULED SUCCESS</CallBadge>
               ) : log.endReason === 'USER_ASKED_FOR_HUMAN' ? (
-                <CallBadge variant="customer-ended">TRANSFFERED</CallBadge>
+                <CallBadge variant="customer-ended">TRANSFERRED</CallBadge>
               ) : log.endReason === 'SCHEDULE_FAIL' ? (
                 <CallBadge variant="twilio-failed">SCHEDULE FAIL</CallBadge>
               ) : log.endReason === 'RESCHEDULE_SUCCESS' ? (

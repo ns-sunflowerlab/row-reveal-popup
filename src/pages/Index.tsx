@@ -14,7 +14,7 @@ const Index = () => {
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1); // Current page
   const [rowsPerPage, setRowsPerPage] = useState(10); // Rows per page
-  const [totalPages, setTotalPages] = useState(5); // Total pages (from API)
+  const [totalPages, setTotalPages] = useState(1); // Total pages (from API)
   const[tenantId , setTenantId] = useState(6);
 
   // Fetch call logs from the API
