@@ -34,23 +34,23 @@
 
     --radius: 0.5rem;
 
-    --sidebar-background: #E5E7EB;
-    --sidebar-foreground: #1F2937;
+    --sidebar-background: #e5e7eb;
+    --sidebar-foreground: #1f2937;
     --sidebar-primary: #0072ce;
-    --sidebar-primary-foreground: #FFFFFF;
+    --sidebar-primary-foreground: #ffffff;
     --sidebar-accent: 240 3.7% 15.9%;
     --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: #D1D5DB;
+    --sidebar-border: #d1d5db;
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
   * {
     @apply border-border selection:bg-white/10 selection:text-white;
   }
-  
+
   body {
     @apply bg-background text-foreground antialiased;
-    font-feature-settings: "ss01", "ss02", "cv01", "cv02", "cv03";
+    font-feature-settings: 'ss01', 'ss02', 'cv01', 'cv02', 'cv03';
   }
 
   html {

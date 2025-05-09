@@ -1,22 +1,20 @@
-
-import React, { useState } from 'react';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import CallBadge from './CallBadge';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { CallLog } from '@/types/calls';
+import React from 'react';
+import CallBadge from './CallBadge';
 
 interface CallLogTableProps {
   logs: CallLog[];
   onRowClick: (log: CallLog) => void;
 }
 const CallLogTable: React.FC<CallLogTableProps> = ({ logs, onRowClick }) => {
-  console.log(logs)
+  console.log(logs);
 
   return (
     <div className="rounded-md overflow-hidden">
       <Table>
         <TableHeader className="bg-secondary">
           <TableRow className="font-bold">
-         
             {/* <TableHead className="w-44">Batch ID</TableHead> */}
             <TableHead className="w-44">Customer Name</TableHead>
             <TableHead className="w-52">Customer Phone Number</TableHead>
@@ -24,17 +22,11 @@ const CallLogTable: React.FC<CallLogTableProps> = ({ logs, onRowClick }) => {
             {/* <TableHead className="w-44">Success Evaluation</TableHead> */}
             <TableHead className="w-44">Start Time</TableHead>
             <TableHead className="w-28">Duration</TableHead>
-
           </TableRow>
         </TableHeader>
-        <TableBody className='font-semibold'>
-          {logs.map((log) => (
-            <TableRow 
-              key={log.callId}
-              className="hover:bg-secondary/30 cursor-pointer transition-colors "
-              onClick={() => onRowClick(log)}
-            >
-         
+        <TableBody className="font-semibold">
+          {logs.map(log => (
+            <TableRow key={log.callId} className="hover:bg-secondary/10 cursor-pointer transition-colors " onClick={() => onRowClick(log)}>
               {/* <TableCell className="font-mono text-xs">
                 <div className="flex items-center gap-2">
                   {log.callId.substring(0, 12)}...
@@ -47,9 +39,7 @@ const CallLogTable: React.FC<CallLogTableProps> = ({ logs, onRowClick }) => {
                 </div>
               </TableCell> */}
               <TableCell>
-                <div className="flex items-center gap-1.5 ">
-                  {log.assistantId}
-                </div>
+                <div className="flex items-center gap-1.5 ">{log.assistantId}</div>
               </TableCell>
               <TableCell>
                 <div className="flex items-center justify-between">
@@ -60,23 +50,23 @@ const CallLogTable: React.FC<CallLogTableProps> = ({ logs, onRowClick }) => {
                 </div>
               </TableCell>
               <TableCell>
-              {log.endReason === 'SCHEDULE_SUCCESS' ? (
-                <CallBadge variant="success">SCHEDULED SUCCESS</CallBadge>
-              ) : log.endReason === 'USER_ASKED_FOR_HUMAN' ? (
-                <CallBadge variant="customer-ended">TRANSFERRED</CallBadge>
-              ) : log.endReason === 'SCHEDULE_FAIL' ? (
-                <CallBadge variant="twilio-failed">SCHEDULE FAIL</CallBadge>
-              ) : log.endReason === 'RESCHEDULE_SUCCESS' ? (
-                <CallBadge variant="success">RESCHEDULE SUCCESS</CallBadge>
-              ) : log.endReason === 'RESCHEDULE_FAIL' ? (
-                <CallBadge variant="twilio-failed">RESCHEDULE FAIL</CallBadge>
-              ) : log.endReason === 'CANCEL_SUCCESS' ? (
-                <CallBadge variant="success">CANCEL SUCCESS</CallBadge>
-              ) : log.endReason === 'CANCEL_FAIL' ? (
-                <CallBadge variant="twilio-failed">CANCEL FAIL</CallBadge>
-              ) : (
-                <CallBadge variant="silence-timeout">N/A</CallBadge>
-              )}
+                {log.endReason === 'SCHEDULE_SUCCESS' ? (
+                  <CallBadge variant="success">SCHEDULED SUCCESS</CallBadge>
+                ) : log.endReason === 'USER_ASKED_FOR_HUMAN' ? (
+                  <CallBadge variant="customer-ended">TRANSFERRED</CallBadge>
+                ) : log.endReason === 'SCHEDULE_FAIL' ? (
+                  <CallBadge variant="twilio-failed">SCHEDULE FAIL</CallBadge>
+                ) : log.endReason === 'RESCHEDULE_SUCCESS' ? (
+                  <CallBadge variant="success">RESCHEDULE SUCCESS</CallBadge>
+                ) : log.endReason === 'RESCHEDULE_FAIL' ? (
+                  <CallBadge variant="twilio-failed">RESCHEDULE FAIL</CallBadge>
+                ) : log.endReason === 'CANCEL_SUCCESS' ? (
+                  <CallBadge variant="success">CANCEL SUCCESS</CallBadge>
+                ) : log.endReason === 'CANCEL_FAIL' ? (
+                  <CallBadge variant="twilio-failed">CANCEL FAIL</CallBadge>
+                ) : (
+                  <CallBadge variant="silence-timeout">N/A</CallBadge>
+                )}
               </TableCell>
               {/* <TableCell>
                 {log.success === 'fail' ? (
@@ -88,8 +78,8 @@ const CallLogTable: React.FC<CallLogTableProps> = ({ logs, onRowClick }) => {
                 )}
               </TableCell> */}
               <TableCell>
-              {log.startTime
-                ? (() => {
+                {log.startTime ? (
+                  (() => {
                     const date = new Date(log.startTime);
                     const formatted = date.toLocaleString('en-US', {
                       month: 'long',
@@ -97,21 +87,25 @@ const CallLogTable: React.FC<CallLogTableProps> = ({ logs, onRowClick }) => {
                       year: 'numeric',
                       hour: 'numeric',
                       minute: '2-digit',
-                      hour12: true,
+                      hour12: true
                     });
                     return formatted; // e.g., "May 7, 2025, 8:15 PM"
                   })()
-                : <span className="text-muted-foreground">N/A</span>}
+                ) : (
+                  <span className="text-muted-foreground">N/A</span>
+                )}
               </TableCell>
               <TableCell>
-              {log.duration
-                ? (() => {
+                {log.duration ? (
+                  (() => {
                     const totalSeconds = parseFloat(log.duration.replace('s', ''));
                     const minutes = Math.floor(totalSeconds / 60);
                     const seconds = Math.round(totalSeconds % 60);
                     return `${minutes}m ${seconds}s`;
                   })()
-                : <span className="text-muted-foreground">N/A</span>}
+                ) : (
+                  <span className="text-muted-foreground">N/A</span>
+                )}
               </TableCell>
             </TableRow>
           ))}

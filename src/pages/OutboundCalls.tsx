@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import StatusCard from '@/components/StatusCard';
-import OutboundCallLogTable from '@/components/OutboundCallLogTable';
 import OutboundCallDetailModal from '@/components/OutboundCallDetailModal';
-import { Button } from '@/components/ui/button';
+import OutboundCallLogTable from '@/components/OutboundCallLogTable';
+import Loader from '@/components/ui/loader';
 import axios from 'axios';
+import { useEffect, useState } from 'react';
 
 interface OutboundCallLog {
   _id: string;
@@ -31,19 +30,17 @@ const OutboundCalls = () => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
   const [tenantId, setTenantId] = useState(6);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Fetch outbound call logs from the API
   const fetchOutboundCallLogs = async () => {
-    setLoading(true);
+    setIsLoading(true);
     try {
-      const response = await axios.get(
-        `https://voiceassistant.demo.zinniax.com/getOutboundCallDetails`,
-        {
-          headers: {
-            "ngrok-skip-browser-warning": "true",
-          },
+      const response = await axios.get(`https://voiceassistant.demo.zinniax.com/getOutboundCallDetails`, {
+        headers: {
+          'ngrok-skip-browser-warning': 'true'
         }
-      );
+      });
 
       if (response.data && Array.isArray(response.data.outboundCallDetails)) {
         const apiData = response.data.outboundCallDetails.map((call: any) => ({
@@ -60,11 +57,12 @@ const OutboundCalls = () => {
           summary: call.summary || 'N/A',
           transcript: call.transcript || 'N/A',
           call_seconds: call.call_seconds || '0',
-          total_calls : call.total_calls || '0',
-          success_calls : call.success_calls || '0',
-          pending_calls : call.pending_calls || '0',
-          failed_calls: call.failed_calls || '0',
+          total_calls: call.total_calls || '0',
+          success_calls: call.success_calls || '0',
+          pending_calls: call.pending_calls || '0',
+          failed_calls: call.failed_calls || '0'
         }));
+        setIsLoading(false);
         setCallLogs(apiData);
         setTotalPages(Math.ceil(response.data.totalCount / response.data.pageSize));
       } else {
@@ -114,42 +112,40 @@ const OutboundCalls = () => {
         </div> */}
 
         {/* Call logs table */}
-        <div className="overflow-hidden rounded-md border border-secondary">
-          <OutboundCallLogTable 
-            logs={callLogs} 
-            onRowClick={handleCallRowClick}
-          />
-        </div>
+        {isLoading && <Loader />}
+        {!isLoading && callLogs && (
+          <div>
+            <div className="overflow-hidden rounded-md border border-secondary">
+              <OutboundCallLogTable logs={callLogs} onRowClick={handleCallRowClick} />
+            </div>
 
-        {/* Pagination */}
-        <div className="flex justify-between items-center mt-4">
-          <button
-            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-            disabled={currentPage === 1}
-            className="px-4 py-2 bg-secondary text-white rounded disabled:opacity-50"
-          >
-            Previous
-          </button>
+            {/* Pagination */}
+            <div className="flex justify-between items-center mt-4">
+              <button
+                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+                className="px-4 py-2 bg-secondary text-white rounded disabled:opacity-50"
+              >
+                Previous
+              </button>
 
-          <span>
-            Page {currentPage} of {totalPages}
-          </span>
+              <span>
+                Page {currentPage} of {totalPages}
+              </span>
 
-          <button
-            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-            disabled={currentPage === totalPages}
-            className="px-4 py-2 bg-secondary text-white rounded disabled:opacity-50"
-          >
-            Next
-          </button>
-        </div>
+              <button
+                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                disabled={currentPage === totalPages}
+                className="px-4 py-2 bg-secondary text-white rounded disabled:opacity-50"
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Call details modal */}
-        <OutboundCallDetailModal
-          isOpen={isDetailModalOpen}
-          onClose={() => setIsDetailModalOpen(false)}
-          call={selectedCall}
-        />
+        <OutboundCallDetailModal isOpen={isDetailModalOpen} onClose={() => setIsDetailModalOpen(false)} call={selectedCall} />
       </div>
     </div>
   );

@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import StatusCard from '@/components/StatusCard';
-import CallLogTable from '@/components/CallLogTable';
 import CallDetailModal from '@/components/CallDetailModal';
+import CallLogTable from '@/components/CallLogTable';
+import Loader from '@/components/ui/loader';
 import { CallLog, getCallStats } from '@/types/calls';
-import { Button } from '@/components/ui/button';
 import axios from 'axios';
+import { useEffect, useState } from 'react';
 
 const Index = () => {
   const [selectedFilter, setSelectedFilter] = useState<'all' | 'transferred' | 'successful' | 'failed'>('all');
@@ -15,27 +14,27 @@ const Index = () => {
   const [currentPage, setCurrentPage] = useState(1); // Current page
   const [rowsPerPage, setRowsPerPage] = useState(10); // Rows per page
   const [totalPages, setTotalPages] = useState(1); // Total pages (from API)
-  const[tenantId , setTenantId] = useState(6);
+  const [tenantId, setTenantId] = useState(6);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Fetch call logs from the API
   const fetchCallLogs = async () => {
-    setLoading(true);
+    setIsLoading(true);
     try {
       const response = await axios.get(
         `https://voiceassistant.demo.zinniax.com/getAllCallDetails?page=${currentPage}&page_size=${rowsPerPage}&tenant_id=${tenantId}`,
         {
           headers: {
-            "ngrok-skip-browser-warning": "true",
-          },
+            'ngrok-skip-browser-warning': 'true'
+          }
         }
       );
-
       if (response.data && Array.isArray(response.data.callDetails)) {
         const apiData = response.data.callDetails.map((call: any) => ({
           callId: call.id,
-          assistantId: call.first_name || "N/A",
+          assistantId: call.first_name || 'N/A',
           customerPhone: call.phone,
-          direction: call.line_status = 'inbound' ,
+          direction: (call.line_status = 'inbound'),
           endReason: call.label || 'N/A',
           success: call.call_status === 'success' ? 'success' : call.call_status === 'fail' ? 'fail' : 'n/a',
           startTime: call.call_analyzed_time || null,
@@ -44,8 +43,9 @@ const Index = () => {
           messages: call.messages || [], // Add messages
           recording: call.call_recording_link || null,
           summary: call.summary || [], // Add logs
-          totalCalls : response.data.totalCount || null
+          totalCalls: response.data.totalCount || null
         }));
+        setIsLoading(false);
         setCallLogs(apiData);
         setTotalPages(Math.ceil(response.data.totalCount / response.data.pageSize));
       } else {
@@ -73,8 +73,10 @@ const Index = () => {
     setIsDetailModalOpen(true);
   };
 
+  console.log(isLoading);
+
   return (
-    <div className="min-h-screen bg-background text-foreground p-6">
+    <div className="min-h-screen max-h-screen bg-background text-foreground p-6">
       <div className="max-w-7xl mx-auto">
         <h1 className="text-3xl font-bold mb-6">Scheduling Assistant Call Results</h1>
 
@@ -183,42 +185,40 @@ const Index = () => {
         </div> */}
 
         {/* Call logs table */}
-        <div className="overflow-hidden rounded-md border border-secondary">
-          <CallLogTable 
-            logs={callLogs} 
-            onRowClick={handleCallRowClick}
-          />
-        </div>
+        {isLoading && <Loader />}
+        {!isLoading && callLogs && (
+          <div>
+            <div className="overflow-hidden rounded-md border border-secondary">
+              <CallLogTable logs={callLogs} onRowClick={handleCallRowClick} />
+            </div>
+            <div className="flex justify-between items-center mt-4">
+              <button
+                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+                className="px-4 py-2 bg-secondary text-white rounded disabled:opacity-50"
+              >
+                Previous
+              </button>
+
+              <span className="">
+                Page {currentPage} of {totalPages}
+              </span>
+
+              <button
+                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                disabled={currentPage === totalPages}
+                className="px-4 py-2 bg-secondary text-white rounded disabled:opacity-50"
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Pagination */}
-        <div className="flex justify-between items-center mt-4">
-          <button
-            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-            disabled={currentPage === 1}
-            className="px-4 py-2 bg-secondary text-white rounded disabled:opacity-50"
-          >
-            Previous
-          </button>
-
-          <span className="">
-            Page {currentPage} of {totalPages}
-          </span>
-
-          <button
-            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-            disabled={currentPage === totalPages}
-            className="px-4 py-2 bg-secondary text-white rounded disabled:opacity-50"
-          >
-            Next
-          </button>
-        </div>
 
         {/* Call details modal */}
-        <CallDetailModal
-          isOpen={isDetailModalOpen}
-          onClose={() => setIsDetailModalOpen(false)}
-          call={selectedCall}
-        />
+        <CallDetailModal isOpen={isDetailModalOpen} onClose={() => setIsDetailModalOpen(false)} call={selectedCall} />
       </div>
     </div>
   );
