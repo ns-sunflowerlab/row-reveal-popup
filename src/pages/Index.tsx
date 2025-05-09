@@ -76,7 +76,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background text-foreground p-6">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold mb-6">ZinniaX Scheduling Assistant Call Log</h1>
+        <h1 className="text-3xl font-bold mb-6">Scheduling Assistant Call Results</h1>
 
         {/* Stats cards */}
         {/* <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">

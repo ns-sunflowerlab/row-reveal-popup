@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Sidebar from "./components/Sidebar"; // Import the Sidebar component
 import NotFound from "./pages/NotFound";
+import OutboundCalls from './pages/OutboundCalls';
 
 const queryClient = new QueryClient();
 
@@ -23,6 +24,8 @@ const App = () => (
         <div className="flex-1 ml-64 p-6 bg-background text-foreground">
           <Routes>
             <Route path="/" element={<Index />} />
+            <Route path="/outbound-calls" element={<OutboundCalls />} />
+
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

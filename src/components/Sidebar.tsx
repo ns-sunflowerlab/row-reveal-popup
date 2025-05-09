@@ -4,7 +4,7 @@ import { NavLink } from "react-router-dom";
 const Sidebar: React.FC = () => {
   const menuItems = [
     { name: "Scheduling Assistant Call Results", path: "/" },
-    { name: "Claim Status Call Results", path: "/claim" },
+    { name: "Claim Status Call Results", path: "/outbound-calls" },
   ];
 
   return (
