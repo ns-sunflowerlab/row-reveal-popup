@@ -2,7 +2,6 @@ import { Dialog, DialogContent, DialogHeader } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { CallLog } from '@/types/calls';
 import React, { useRef, useState } from 'react';
-import { Separator } from './ui/separator';
 
 interface CallDetailModalProps {
   isOpen: boolean;
@@ -218,10 +217,8 @@ const CallDetailModal: React.FC<CallDetailModalProps> = ({ isOpen, onClose, call
               {/* Summary Tab */}
               <TabsContent value="summary" className="mt-0">
                 <div className="p-5 border border-secondary rounded-md overflow-y-auto max-h-[70vh]">
-                  <h3 className="text-lg font-semibold mb-4">Summary</h3>
-                  <Separator />
                   {call.summary ? (
-                    <div className="text-200 pt-5">{call.summary}</div>
+                    <div className="text-200 pt-s">{call.summary}</div>
                   ) : (
                     <div className="text-muted-foreground pt-5">No summary available.</div>
                   )}
@@ -229,11 +226,9 @@ const CallDetailModal: React.FC<CallDetailModalProps> = ({ isOpen, onClose, call
               </TabsContent>
               {/* Transcripts Tab */}
               <TabsContent value="transcripts" className="mt-0">
-                <div className="p-5 border border-secondary rounded-md overflow-y-auto rounded-md max-h-[70vh]">
-                  <h3 className="text-lg font-semibold mb-4">Transcript</h3>
-                  <Separator />
+                <div className="p-5 border border-secondary rounded-md overflow-y-auto rounded-md max-h-[69vh]">
                   {formattedTranscript.length > 0 ? (
-                    <div className="space-y-2 pt-5">{renderTranscript()}</div>
+                    <div className="space-y-2 pt-2">{renderTranscript()}</div>
                   ) : (
                     <div className="text-muted-foreground">No transcript available.</div>
                   )}
