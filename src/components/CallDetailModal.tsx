@@ -126,7 +126,7 @@ const CallDetailModal: React.FC<CallDetailModalProps> = ({ isOpen, onClose, call
           </DialogHeader>
 
           <div className="p-2">
-            <div className="border-b border-secondary pb-4">
+            <div className="pb-4">
               <div className="flex justify-between mb-4">
                 <h3 className="text-lg font-semibold">Recording</h3>
               </div>
