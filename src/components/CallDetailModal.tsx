@@ -126,115 +126,119 @@ const CallDetailModal: React.FC<CallDetailModalProps> = ({ isOpen, onClose, call
           </DialogHeader>
 
           <div className="p-2">
-            <div className="flex justify-between mb-4">
-              <h3 className="text-lg font-semibold">Recording</h3>
-            </div>
-
-            <div className="mb-5">
-              {/* Custom Audio Player */}
-              {call.recording ? (
-                <div className="flex items-center gap-4">
-                  <audio
-                    ref={audioRef}
-                    src={call.recording}
-                    onTimeUpdate={handleTimeUpdate}
-                    onEnded={() => setIsPlaying(false)}
-                    className="hidden"
-                  ></audio>
-
-                  {/* Play Button */}
-                  <button
-                    onClick={handlePlay}
-                    disabled={isPlaying}
-                    className={`p-2 rounded-full transition-colors ${
-                      isPlaying ? 'bg-gray-400 cursor-not-allowed' : 'bg-teal-500/20 hover:bg-teal-500/30'
-                    }`}
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="20"
-                      height="20"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <polygon points="5 3 19 12 5 21 5 3" />
-                    </svg>
-                  </button>
-
-                  {/* Pause Button */}
-                  <button
-                    onClick={handlePause}
-                    disabled={!isPlaying}
-                    className={`p-3 rounded-full transition-colors ${
-                      !isPlaying ? 'bg-gray-400 cursor-not-allowed' : 'bg-red-500/20 hover:bg-red-500/30'
-                    }`}
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="20"
-                      height="20"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <rect x="6" y="6" width="12" height="12" />
-                    </svg>
-                  </button>
-
-                  {/* Progress Bar */}
-                  <input type="range" min="0" max="100" value={progress} onChange={handleSeek} className="w-full" />
-                </div>
-              ) : (
-                <div className="text-muted-foreground">No recording available.</div>
-              )}
-            </div>
-
-            <Tabs defaultValue="summary">
-              <div className="w-full">
-                <TabsList className="bg-white mb-4 flex justify-around !w-full">
-                  <TabsTrigger
-                    value="summary"
-                    className="text-black data-[state=active]:border-b-2 border-primary flex-grow text-center !w-1/2"
-                  >
-                    Summary
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="transcripts"
-                    className="text-black data-[state=active]:border-b-2 border-primary flex-grow text-center !w-1/2"
-                  >
-                    Transcripts
-                  </TabsTrigger>
-                </TabsList>
+            <div className="border-b border-secondary pb-4">
+              <div className="flex justify-between mb-4">
+                <h3 className="text-lg font-semibold">Recording</h3>
               </div>
 
-              {/* Summary Tab */}
-              <TabsContent value="summary" className="mt-0">
-                <div className="p-5 border border-secondary rounded-md overflow-y-auto max-h-[70vh]">
-                  {call.summary ? (
-                    <div className="text-200 pt-s">{call.summary}</div>
-                  ) : (
-                    <div className="text-muted-foreground pt-5">No summary available.</div>
-                  )}
+              <div className="mb-5">
+                {/* Custom Audio Player */}
+                {call.recording ? (
+                  <div className="flex items-center gap-4">
+                    <audio
+                      ref={audioRef}
+                      src={call.recording}
+                      onTimeUpdate={handleTimeUpdate}
+                      onEnded={() => setIsPlaying(false)}
+                      className="hidden"
+                    ></audio>
+
+                    {/* Play Button */}
+                    <button
+                      onClick={handlePlay}
+                      disabled={isPlaying}
+                      className={`p-2 rounded-full transition-colors ${
+                        isPlaying ? 'bg-gray-400 cursor-not-allowed' : 'bg-teal-500/20 hover:bg-teal-500/30'
+                      }`}
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="20"
+                        height="20"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <polygon points="5 3 19 12 5 21 5 3" />
+                      </svg>
+                    </button>
+
+                    {/* Pause Button */}
+                    <button
+                      onClick={handlePause}
+                      disabled={!isPlaying}
+                      className={`p-3 rounded-full transition-colors ${
+                        !isPlaying ? 'bg-gray-400 cursor-not-allowed' : 'bg-red-500/20 hover:bg-red-500/30'
+                      }`}
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="20"
+                        height="20"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <rect x="6" y="6" width="12" height="12" />
+                      </svg>
+                    </button>
+
+                    {/* Progress Bar */}
+                    <input type="range" min="0" max="100" value={progress} onChange={handleSeek} className="w-full" />
+                  </div>
+                ) : (
+                  <div className="text-muted-foreground">No recording available.</div>
+                )}
+              </div>
+            </div>
+
+            <div className="mt-5">
+              <Tabs defaultValue="summary">
+                <div className="w-full">
+                  <TabsList className="bg-white mb-4 flex justify-around !w-full border-b-2 border-slate-200 pb-0">
+                    <TabsTrigger
+                      value="summary"
+                      className="text-black data-[state=active]:border-b-2 border-primary flex-grow text-center !w-1/2"
+                    >
+                      Summary
+                    </TabsTrigger>
+                    <TabsTrigger
+                      value="transcripts"
+                      className="text-black data-[state=active]:border-b-2 border-primary flex-grow text-center !w-1/2"
+                    >
+                      Transcripts
+                    </TabsTrigger>
+                  </TabsList>
                 </div>
-              </TabsContent>
-              {/* Transcripts Tab */}
-              <TabsContent value="transcripts" className="mt-0">
-                <div className="p-5 border border-secondary rounded-md overflow-y-auto rounded-md max-h-[69vh]">
-                  {formattedTranscript.length > 0 ? (
-                    <div className="space-y-2 pt-2">{renderTranscript()}</div>
-                  ) : (
-                    <div className="text-muted-foreground">No transcript available.</div>
-                  )}
-                </div>
-              </TabsContent>
-            </Tabs>
+
+                {/* Summary Tab */}
+                <TabsContent value="summary" className="mt-0">
+                  <div className="p-5 overflow-y-auto max-h-[67vh]">
+                    {call.summary ? (
+                      <div className="text-200 pt-s">{call.summary}</div>
+                    ) : (
+                      <div className="text-muted-foreground pt-5">No summary available.</div>
+                    )}
+                  </div>
+                </TabsContent>
+                {/* Transcripts Tab */}
+                <TabsContent value="transcripts" className="mt-0">
+                  <div className="p-5 overflow-y-auto rounded-md max-h-[67vh]">
+                    {formattedTranscript.length > 0 ? (
+                      <div className="space-y-2 pt-2">{renderTranscript()}</div>
+                    ) : (
+                      <div className="text-muted-foreground">No transcript available.</div>
+                    )}
+                  </div>
+                </TabsContent>
+              </Tabs>
+            </div>
           </div>
         </div>
       </DialogContent>
