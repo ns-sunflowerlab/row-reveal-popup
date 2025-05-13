@@ -1,22 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import OutboundCallDetailModal from '@/components/OutboundCallDetailModal';
+import CallBadge from '@/components/CallBadge';
+import OutboundCallDetailModal, { OutboundCallLog } from '@/components/OutboundCallDetailModal';
 import Loader from '@/components/ui/loader';
 import axios from 'axios';
-
-interface OutboundCallDocument {
-  id: string;
-  claim_number: string;
-  phone: string;
-  created_at: string;
-  line_status: string;
-  call_end_reason?: string;
-  call_recording_link?: string;
-  call_status: string;
-  call_id?: string;
-  summary?: string;
-  transcript?: string;
-  call_seconds?: string;
-}
+import { CircleCheckBig, CircleX, Clock4 } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
 
 interface OutboundCallBatch {
   batch_id: string;
@@ -24,13 +11,13 @@ interface OutboundCallBatch {
   success_calls: number;
   pending_calls: number;
   failed_calls: number;
-  documents: OutboundCallDocument[];
+  documents: OutboundCallLog[];
 }
 
 const OutboundCalls = () => {
   const [batches, setBatches] = useState<OutboundCallBatch[]>([]);
   const [expandedBatchId, setExpandedBatchId] = useState<string | null>(null);
-  const [selectedCall, setSelectedCall] = useState<OutboundCallDocument | null>(null);
+  const [selectedCall, setSelectedCall] = useState<OutboundCallLog | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -40,7 +27,7 @@ const OutboundCalls = () => {
   const fetchOutboundCallLogs = async () => {
     setIsLoading(true);
     try {
-      const response = await axios.get(`http://localhost:8002/getOutboundCallDetails?page=${currentPage}&page_size=20`);
+      const response = await axios.get(`http://192.168.1.59:8002/getOutboundCallDetails?page=${currentPage}&page_size=20`);
 
       if (response.data && response.data.outboundCallDetails) {
         const { total_documents, batches } = response.data.outboundCallDetails;
@@ -61,10 +48,10 @@ const OutboundCalls = () => {
   }, [currentPage]);
 
   const toggleBatchExpansion = (batchId: string) => {
-    setExpandedBatchId((prev) => (prev === batchId ? null : batchId));
+    setExpandedBatchId(prev => (prev === batchId ? null : batchId));
   };
 
-  const handleCallRowClick = (call: OutboundCallDocument) => {
+  const handleCallRowClick = (call: OutboundCallLog) => {
     setSelectedCall(call);
     setIsDetailModalOpen(true);
   };
@@ -87,7 +74,7 @@ const OutboundCalls = () => {
                 </tr>
               </thead>
               <tbody className="font-semibold">
-                {batches.map((batch) => (
+                {batches.map(batch => (
                   <React.Fragment key={batch.batch_id}>
                     <tr
                       className="border-b cursor-pointer hover:bg-secondary/10 transition-colors"
@@ -102,19 +89,30 @@ const OutboundCalls = () => {
                               year: 'numeric',
                               hour: 'numeric',
                               minute: '2-digit',
-                              hour12: true,
+                              hour12: true
                             })
                           : 'N/A'}
                       </td>
-                      <td className="px-4 py-2">
-                        {batch.success_calls} : {batch.pending_calls} : {batch.failed_calls} / {batch.total_calls}
+                      <td className="py-2">
+                        <div className="flex gap-2">
+                          <CallBadge variant="success" className="flex items-center">
+                            <CircleCheckBig size={12} />: {batch.success_calls}
+                          </CallBadge>
+                          <CallBadge variant="fail" className="flex items-center">
+                            <CircleX size={12} />: {batch.failed_calls}
+                          </CallBadge>
+                          <CallBadge variant="silence-timeout" className="flex items-center">
+                            <Clock4 size={12} />: {batch.pending_calls}
+                          </CallBadge>
+                        </div>
+                        <CallBadge>Total: {batch.total_calls}</CallBadge>
                       </td>
                       <td className="px-4 py-2">{batch.documents[0]?.line_status || 'N/A'}</td>
                     </tr>
                     {expandedBatchId === batch.batch_id && (
                       <tr>
-                        <td colSpan={4} className="px-4 py-2 bg-gray-100">
-                          <table className="table-auto w-full text-left">
+                        <td colSpan={4} className="px-4 py-2 bg-slate-200">
+                          <table className="table-auto border w-full bg-white text-left">
                             <thead className="bg-secondary text-white">
                               <tr>
                                 <th className="px-4 py-2">Date</th>
@@ -124,10 +122,10 @@ const OutboundCalls = () => {
                               </tr>
                             </thead>
                             <tbody>
-                              {batch.documents.map((doc) => (
+                              {batch.documents.map(doc => (
                                 <tr
-                                  key={doc.id}
-                                  className="hover:bg-secondary/10 cursor-pointer transition-colors"
+                                  key={doc._id}
+                                  className="hover:bg-secondary/10 cursor-pointer transition-colors border-b"
                                   onClick={() => handleCallRowClick(doc)}
                                 >
                                   <td className="px-4 py-2">
@@ -137,7 +135,7 @@ const OutboundCalls = () => {
                                       year: 'numeric',
                                       hour: 'numeric',
                                       minute: '2-digit',
-                                      hour12: true,
+                                      hour12: true
                                     })}
                                   </td>
                                   <td className="px-4 py-2">{doc.phone}</td>
@@ -158,34 +156,32 @@ const OutboundCalls = () => {
         )}
 
         {/* Pagination */}
-        <div className="flex justify-between items-center mt-4">
-          <button
-            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-            disabled={currentPage === 1}
-            className="px-4 py-2 bg-secondary text-white rounded disabled:opacity-50"
-          >
-            Previous
-          </button>
+        {!isLoading && batches.length > 0 && (
+          <div className="flex justify-between items-center mt-4">
+            <button
+              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              className="px-4 py-2 bg-secondary text-white rounded disabled:opacity-50"
+            >
+              Previous
+            </button>
 
-          <span>
-            Page {currentPage} of {totalPages}
-          </span>
+            <span>
+              Page {currentPage} of {totalPages}
+            </span>
 
-          <button
-            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-            disabled={currentPage === totalPages}
-            className="px-4 py-2 bg-secondary text-white rounded disabled:opacity-50"
-          >
-            Next
-          </button>
-        </div>
+            <button
+              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+              disabled={currentPage === totalPages}
+              className="px-4 py-2 bg-secondary text-white rounded disabled:opacity-50"
+            >
+              Next
+            </button>
+          </div>
+        )}
 
         {/* Call details modal */}
-        <OutboundCallDetailModal
-          isOpen={isDetailModalOpen}
-          onClose={() => setIsDetailModalOpen(false)}
-          call={selectedCall}
-        />
+        <OutboundCallDetailModal isOpen={isDetailModalOpen} onClose={() => setIsDetailModalOpen(false)} call={selectedCall} />
       </div>
     </div>
   );

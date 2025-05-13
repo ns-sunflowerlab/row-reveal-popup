@@ -4,7 +4,7 @@ import { Separator } from '@/components/ui/separator';
 import { Calendar, FileText, Headphones, Info, Phone } from 'lucide-react';
 import React from 'react';
 
-interface OutboundCallLog {
+export interface OutboundCallLog {
   _id: string;
   claim_number: string;
   phone: string;
@@ -23,7 +23,7 @@ interface OutboundCallLog {
 interface OutboundCallDetailModalProps {
   isOpen: boolean;
   onClose: () => void;
-  call: OutboundCallLog | null;
+  call?: OutboundCallLog;
 }
 
 const OutboundCallDetailModal: React.FC<OutboundCallDetailModalProps> = ({ isOpen, onClose, call }) => {

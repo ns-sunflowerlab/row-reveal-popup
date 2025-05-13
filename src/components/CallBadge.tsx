@@ -4,8 +4,8 @@ import React from 'react';
 type CallBadgeVariant = 'fail' | 'success' | 'inbound' | 'outbound' | 'customer-ended' | 'twilio-failed' | 'silence-timeout';
 
 interface CallBadgeProps {
-  variant: CallBadgeVariant;
-  children: React.ReactNode;
+  variant?: CallBadgeVariant;
+  children?: React.ReactNode;
   className?: string;
 }
 
