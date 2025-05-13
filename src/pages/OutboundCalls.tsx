@@ -27,7 +27,7 @@ const OutboundCalls = () => {
   const fetchOutboundCallLogs = async () => {
     setIsLoading(true);
     try {
-      const response = await axios.get(`http://192.168.1.59:8002/getOutboundCallDetails?page=${currentPage}&page_size=20`);
+      const response = await axios.get(`https://kind-largely-platypus.ngrok-free.app/getOutboundCallDetails?page=${currentPage}&page_size=20`);
 
       if (response.data && response.data.outboundCallDetails) {
         const { total_documents, batches } = response.data.outboundCallDetails;
