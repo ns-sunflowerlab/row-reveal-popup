@@ -32,7 +32,7 @@ const OutboundCallLogTable: React.FC<OutboundCallLogTableProps> = ({ logs, onRow
       <Table>
         <TableHeader className="bg-secondary">
           <TableRow className="font-bold">
-            <TableHead className="w-44">Batch Id</TableHead>
+            {/* <TableHead className="w-44">Batch Id</TableHead> */}
             <TableHead className="w-52">Date</TableHead>
             <TableHead className="w-48">Phone Number</TableHead>
             <TableHead className="w-44">Claims</TableHead>
@@ -46,7 +46,7 @@ const OutboundCallLogTable: React.FC<OutboundCallLogTableProps> = ({ logs, onRow
               className="hover:bg-secondary/30 cursor-pointer transition-colors"
               onClick={() => onRowClick(log)}
             >
-              <TableCell>{log.batch_id}</TableCell>
+              {/* <TableCell>{log.batch_id}</TableCell> */}
               <TableCell>
                 {new Date(log.created_at).toLocaleString('en-US', {
                   month: 'long',
@@ -61,10 +61,20 @@ const OutboundCallLogTable: React.FC<OutboundCallLogTableProps> = ({ logs, onRow
               <TableCell>
                 <div className="flex items-center space-x-2">
                   {/* <CallBadge color="green">{log.success_calls}</CallBadge> */}
-                <CallBadge variant="success">{log.success_calls}</CallBadge>
+                    {log.call_status === "success" && (
+                      <CallBadge variant="success">{log.call_status}</CallBadge>
+                    )}
+                    {log.call_status === "fail" && (
+                      <CallBadge variant="fail">{log.call_status}</CallBadge>
+                    )}
+                    {log.call_status === "pending" && (
+                      <CallBadge variant="silence-timeout">{log.call_status}</CallBadge>
+                    )}
+                  
+                {/* <CallBadge variant="success">{log.success_calls}</CallBadge>
                 <CallBadge variant="fail">{log.failed_calls}</CallBadge>
                 <CallBadge variant="silence-timeout">{log.pending_calls}</CallBadge>
-                <CallBadge variant="customer-ended">{log.total_calls}</CallBadge>
+                <CallBadge variant="customer-ended">{log.total_calls}</CallBadge> */}
 
                   {/* <CallBadge color="red">{log.failed_calls}</CallBadge>
                   <CallBadge color="yellow">{log.pending_calls}</CallBadge>
