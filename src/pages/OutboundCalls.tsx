@@ -27,12 +27,7 @@ const OutboundCalls = () => {
   const fetchOutboundCallLogs = async () => {
     setIsLoading(true);
     try {
-      const response = await axios.get(`https://kind-largely-platypus.ngrok-free.app/getOutboundCallDetails?page=${currentPage}&page_size=20`,
-            {
-          headers: {
-            'ngrok-skip-browser-warning': 'true'
-          }
-        });
+      const response = await axios.get(`https://voiceassistant.demo.zinniax.com/getOutboundCallDetails?page=${currentPage}&page_size=20`);
 
       if (response.data && response.data.outboundCallDetails) {
         const { total_documents, batches } = response.data.outboundCallDetails;
@@ -72,10 +67,11 @@ const OutboundCalls = () => {
             <table className="table-auto w-full text-left">
               <thead className="bg-secondary text-white">
                 <tr>
-                  <th className="px-4 py-2">Batch ID</th>
-                  <th className="px-4 py-2">Date</th>
-                  <th className="px-4 py-2">Claims</th>
-                  <th className="px-4 py-2">Status</th>
+                  <th className="px-2 py-2">Batch ID</th>
+                  <th className=" py-2">Date</th>
+                  <th className="px-2 py-2">Claims</th>
+                  <th className="px-2 py-2">Status</th>
+                  <th className="px-2 py-2">Completed Date</th>
                 </tr>
               </thead>
               <tbody className="font-semibold">
@@ -85,8 +81,8 @@ const OutboundCalls = () => {
                       className="border-b cursor-pointer hover:bg-secondary/10 transition-colors"
                       onClick={() => toggleBatchExpansion(batch.batch_id)}
                     >
-                      <td className="px-4 py-2">{batch.batch_id}</td>
-                      <td className="px-4 py-2">
+                      <td className="px-2 py-2 w-[30%]">{batch.batch_id}</td>
+                      <td className=" py-2">
                         {batch.documents[0]?.created_at
                           ? new Date(batch.documents[0].created_at).toLocaleString('en-US', {
                               month: 'long',
@@ -100,30 +96,43 @@ const OutboundCalls = () => {
                       </td>
                       <td className="py-2">
                         <div className="flex gap-2">
-                          <CallBadge variant="success" className="flex items-center">
+                          <CallBadge variant="success" className="flex items-center px-1">
                             <CircleCheckBig size={12} />: {batch.success_calls}
                           </CallBadge>
-                          <CallBadge variant="fail" className="flex items-center">
+                          <CallBadge variant="fail" className="flex items-center px-1">
                             <CircleX size={12} />: {batch.failed_calls}
                           </CallBadge>
-                          <CallBadge variant="silence-timeout" className="flex items-center">
+                          <CallBadge variant="silence-timeout" className="flex items-center px-1">
                             <Clock4 size={12} />: {batch.pending_calls}
                           </CallBadge>
                         </div>
-                        <CallBadge>Total: {batch.total_calls}</CallBadge>
+                        <CallBadge className="px-1">Total: {batch.total_calls}</CallBadge>
                       </td>
-                      <td className="px-4 py-2">{batch.documents[0]?.line_status || 'N/A'}</td>
+                      <td className="px-2 py-2">{batch.documents[0]?.line_status || 'N/A'}</td>
+                      <td className="px-2 py-2">
+                        {batch.documents[0]?.completed_at
+                          ? new Date(batch.documents[0].completed_at).toLocaleString('en-US', {
+                              month: 'long',
+                              day: 'numeric',
+                              year: 'numeric',
+                              hour: 'numeric',
+                              minute: '2-digit',
+                              hour12: true
+                            })
+                          : 'N/A'}
+                      </td>
                     </tr>
                     {expandedBatchId === batch.batch_id && (
                       <tr>
-                        <td colSpan={4} className="px-4 py-2 bg-slate-200">
+                        <td colSpan={5} className="px-4 py-2 bg-slate-200">
                           <table className="table-auto border w-full bg-white text-left">
                             <thead className="bg-secondary text-white">
                               <tr>
                                 <th className="px-4 py-2">Date</th>
                                 <th className="px-4 py-2">Phone</th>
                                 <th className="px-4 py-2">Claim Number</th>
-                                <th className="px-4 py-2">Status</th>
+                                <th className="px-4 py-2">Call Status</th>
+                                <th className="px-4 py-2">Claim Status</th>
                               </tr>
                             </thead>
                             <tbody>
@@ -146,6 +155,7 @@ const OutboundCalls = () => {
                                   <td className="px-4 py-2">{doc.phone}</td>
                                   <td className="px-4 py-2">{doc.claim_number || 'N/A'}</td>
                                   <td className="px-4 py-2">{doc.line_status || 'N/A'}</td>
+                                  <td className="px-4 py-2">{doc.claim_status || 'N/A'}</td>
                                 </tr>
                               ))}
                             </tbody>

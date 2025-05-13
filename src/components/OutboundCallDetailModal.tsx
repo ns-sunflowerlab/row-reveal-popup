@@ -1,8 +1,9 @@
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader } from '@/components/ui/dialog';
 import { Separator } from '@/components/ui/separator';
-import { Calendar, FileText, Headphones, Info, Phone } from 'lucide-react';
-import React from 'react';
+import { Calendar, FileText, Info, Phone } from 'lucide-react';
+import React, { useRef, useState } from 'react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 
 export interface OutboundCallLog {
   _id: string;
@@ -10,7 +11,9 @@ export interface OutboundCallLog {
   phone: string;
   batch_id: string;
   created_at: string;
+  completed_at: string;
   line_status: string;
+  claim_status: string;
   call_end_reason?: string;
   call_recording_link?: string;
   call_status: string;
@@ -28,6 +31,62 @@ interface OutboundCallDetailModalProps {
 
 const OutboundCallDetailModal: React.FC<OutboundCallDetailModalProps> = ({ isOpen, onClose, call }) => {
   if (!call) return null;
+
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  const handlePlay = () => {
+    if (audioRef.current) {
+      audioRef.current.play();
+      setIsPlaying(true);
+    }
+  };
+
+  const handlePause = () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      setIsPlaying(false);
+    }
+  };
+
+  const handleTimeUpdate = () => {
+    if (audioRef.current) {
+      const currentTime = audioRef.current.currentTime;
+      const duration = audioRef.current.duration;
+      setProgress((currentTime / duration) * 100);
+    }
+  };
+
+  const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (audioRef.current) {
+      const seekTime = (parseFloat(e.target.value) / 100) * audioRef.current.duration;
+      audioRef.current.currentTime = seekTime;
+    }
+  };
+
+  const formattedTranscript =
+    call.transcript && call.transcript !== ''
+      ? call.transcript
+          .split(/\n|\r|\s{2,}/)
+          .filter(line => line.trim() !== '')
+          .map((chat: string) => {
+            const splited = chat.split(':');
+            if (splited[0] === 'AI') {
+              return {
+                line: splited[1],
+                isAI: true,
+                isUser: false
+              };
+            } else {
+              return {
+                line: splited[1],
+                isAI: false,
+                isUser: true
+              };
+            }
+          })
+      : [];
 
   // Function to render the status badge with the right color
   const renderStatusBadge = (status: string) => {
@@ -48,6 +107,30 @@ const OutboundCallDetailModal: React.FC<OutboundCallDetailModalProps> = ({ isOpe
     }
 
     return <Badge className="ml-2 capitalize">{status}</Badge>;
+  };
+
+  const renderTranscript = () => {
+    return formattedTranscript.map((chat, index) => {
+      if (chat.isAI) {
+        return (
+          <div className="justify-self-end max-w-[25vw]">
+            <div className="text-right text-gray text-sm mr-1">Zinniax AI</div>
+            <div key={index} className={`p-2 rounded-md ${'bg-secondary/20 text-right'}`}>
+              {chat.line}
+            </div>
+          </div>
+        );
+      } else {
+        return (
+          <div className="justify-self-start max-w-[25vw]">
+            <div className="text-left text-sm ml-1">User</div>
+            <div key={index} className={`p-2 rounded-md ${'bg-success/20 text-left'}`}>
+              {chat.line}
+            </div>
+          </div>
+        );
+      }
+    });
   };
 
   // Format the date for display
@@ -88,7 +171,7 @@ const OutboundCallDetailModal: React.FC<OutboundCallDetailModalProps> = ({ isOpe
             {/* Primary Information */}
             <div className="space-y-4">
               <div>
-                <h3 className="text-sm font-medium mb-2">Primary Information</h3>
+                <h3 className="text-md font-medium mb-2">Primary Information</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="flex items-start space-x-2 text-sm">
                     <Phone className="h-4 w-4 mt-0.5 " />
@@ -122,23 +205,6 @@ const OutboundCallDetailModal: React.FC<OutboundCallDetailModalProps> = ({ isOpe
                       <p className="">{call.line_status}</p>
                     </div>
                   </div>
-
-                  {call.call_recording_link && (
-                    <div className="flex items-start space-x-2 text-sm">
-                      <Headphones className="h-4 w-4 mt-0.5 " />
-                      <div>
-                        <p className="font-medium">Recording</p>
-                        <a
-                          href={call.call_recording_link}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-primary hover:underline"
-                        >
-                          Listen to call
-                        </a>
-                      </div>
-                    </div>
-                  )}
                 </div>
               </div>
 
@@ -146,7 +212,7 @@ const OutboundCallDetailModal: React.FC<OutboundCallDetailModalProps> = ({ isOpe
 
               {/* Call Details */}
               <div>
-                <h3 className="text-sm font-medium mb-2">Call Details</h3>
+                <h3 className="text-md font-medium mb-2">Call Details</h3>
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
                     <p className="font-medium">Call Status</p>
@@ -167,37 +233,125 @@ const OutboundCallDetailModal: React.FC<OutboundCallDetailModalProps> = ({ isOpe
 
               <Separator className="my-2" />
 
-              {/* Technical Details */}
-              <div>
-                <h3 className="text-sm font-medium mb-2">Technical Details</h3>
-                <div className="text-sm">
-                  <p className="font-medium">Batch ID</p>
-                  <p className=" text-xs break-all">{call.batch_id}</p>
-                </div>
-              </div>
+              {call.call_recording_link ? (
+                <div className="py-2">
+                  <div className="pb-4">
+                    <div className="flex justify-between mb-4">
+                      <h3 className="text-lg font-semibold">Recording</h3>
+                    </div>
 
-              {/* Content Section with Summary & Transcript */}
-              {(call.summary || call.transcript) && (
-                <>
-                  <Separator className="my-2" />
-                  <div>
-                    <h3 className="text-sm font-medium mb-2">Content</h3>
+                    <div className="mb-5">
+                      {/* Custom Audio Player */}
 
-                    {call.summary && (
-                      <div className="mb-4">
-                        <p className="font-medium text-sm">Summary</p>
-                        <p className=" text-sm mt-1 bg-muted p-3 rounded-md">{call.summary}</p>
+                      <div className="flex items-center gap-4">
+                        <audio
+                          ref={audioRef}
+                          src={call.call_recording_link}
+                          onTimeUpdate={handleTimeUpdate}
+                          onEnded={() => setIsPlaying(false)}
+                          className="hidden"
+                        ></audio>
+
+                        {/* Play Button */}
+                        <button
+                          onClick={handlePlay}
+                          disabled={isPlaying}
+                          className={`p-2 rounded-full transition-colors ${
+                            isPlaying ? 'bg-gray-400 cursor-not-allowed' : 'bg-teal-500/20 hover:bg-teal-500/30'
+                          }`}
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="20"
+                            height="20"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
+                            <polygon points="5 3 19 12 5 21 5 3" />
+                          </svg>
+                        </button>
+
+                        {/* Pause Button */}
+                        <button
+                          onClick={handlePause}
+                          disabled={!isPlaying}
+                          className={`p-3 rounded-full transition-colors ${
+                            !isPlaying ? 'bg-gray-400 cursor-not-allowed' : 'bg-red-500/20 hover:bg-red-500/30'
+                          }`}
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="20"
+                            height="20"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
+                            <rect x="6" y="6" width="12" height="12" />
+                          </svg>
+                        </button>
+
+                        {/* Progress Bar */}
+                        <input type="range" min="0" max="100" value={progress} onChange={handleSeek} className="w-full" />
                       </div>
-                    )}
-
-                    {call.transcript && (
-                      <div>
-                        <p className="font-medium text-sm">Transcript</p>
-                        <div className=" text-sm mt-1 max-h-60 overflow-y-auto bg-muted p-3 rounded-md">{call.transcript}</div>
-                      </div>
-                    )}
+                    </div>
                   </div>
-                </>
+                </div>
+              ) : (
+                <div className="text-black">No recording available.</div>
+              )}
+
+              {call.summary !== '' || call.transcript !== '' ? (
+                <div className="mt-5">
+                  <Tabs defaultValue="summary">
+                    <div className="w-full">
+                      <TabsList className="bg-white mb-4 flex justify-around !w-full border-b-2 border-slate-200 pb-0">
+                        <TabsTrigger
+                          value="summary"
+                          className="text-black data-[state=active]:border-b-2 border-primary flex-grow text-center !w-1/2"
+                        >
+                          Summary
+                        </TabsTrigger>
+                        <TabsTrigger
+                          value="transcripts"
+                          className="text-black data-[state=active]:border-b-2 border-primary flex-grow text-center !w-1/2"
+                        >
+                          Transcripts
+                        </TabsTrigger>
+                      </TabsList>
+                    </div>
+
+                    {/* Summary Tab */}
+                    <TabsContent value="summary" className="mt-0">
+                      <div className="p-5 overflow-y-auto max-h-[67vh]">
+                        {call.summary && call.summary !== '' ? (
+                          <div className="text-200 pt-s">{call.summary}</div>
+                        ) : (
+                          <div className="text-muted-foreground pt-5">No summary available.</div>
+                        )}
+                      </div>
+                    </TabsContent>
+                    {/* Transcripts Tab */}
+                    <TabsContent value="transcripts" className="mt-0">
+                      <div className="p-5 overflow-y-auto rounded-md max-h-[67vh]">
+                        {formattedTranscript.length > 0 ? (
+                          <div className="space-y-2 pt-2">{renderTranscript()}</div>
+                        ) : (
+                          <div className="text-muted-foreground">No transcript available.</div>
+                        )}
+                      </div>
+                    </TabsContent>
+                  </Tabs>
+                </div>
+              ) : (
+                <div></div>
               )}
             </div>
           </div>
