@@ -1,24 +1,27 @@
 import CallBadge from '@/components/CallBadge';
-import OutboundCallDetailModal, { OutboundCallLog } from '@/components/OutboundCallDetailModal';
+import OutboundCallBatchDetail from '@/components/OutboundCallBatchDetail';
+import { OutboundCallLogDTO } from '@/components/OutboundCallDetailModal';
 import Loader from '@/components/ui/loader';
 import axios from 'axios';
 import { CircleCheckBig, CircleX, Clock4 } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 
-interface OutboundCallBatch {
+export interface OutboundCallBatch {
   batch_id: string;
   total_calls: number;
   success_calls: number;
   pending_calls: number;
   failed_calls: number;
-  documents: OutboundCallLog[];
+  documents: OutboundCallLogDTO[];
 }
 
 const OutboundCalls = () => {
   const [batches, setBatches] = useState<OutboundCallBatch[]>([]);
-  const [expandedBatchId, setExpandedBatchId] = useState<string | null>(null);
-  const [selectedCall, setSelectedCall] = useState<OutboundCallLog | null>(null);
+  const [batchDetail, setBatchDetail] = useState<OutboundCallBatch | null>(null);
+  const [selectedCall, setSelectedCall] = useState<OutboundCallLogDTO | null>(null);
+  const [callLogs, setCallLogs] = useState<OutboundCallLogDTO[] | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [isCallLogModalOpen, setIsCallLogModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -47,11 +50,18 @@ const OutboundCalls = () => {
     fetchOutboundCallLogs();
   }, [currentPage]);
 
-  const toggleBatchExpansion = (batchId: string) => {
-    setExpandedBatchId(prev => (prev === batchId ? null : batchId));
+  const toggleBatchExpansion = (batch: OutboundCallBatch, logs?: OutboundCallLogDTO[]) => {
+    setIsCallLogModalOpen(true);
+    setBatchDetail(batch);
+    logs ? setCallLogs(logs) : '';
   };
 
-  const handleCallRowClick = (call: OutboundCallLog) => {
+  const closeCallLogModal = () => {
+    setIsCallLogModalOpen(false);
+    setBatchDetail(null);
+  };
+
+  const handleCallRowClick = (call: OutboundCallLogDTO) => {
     setSelectedCall(call);
     setIsDetailModalOpen(true);
   };
@@ -79,7 +89,7 @@ const OutboundCalls = () => {
                   <React.Fragment key={batch.batch_id}>
                     <tr
                       className="border-b cursor-pointer hover:bg-secondary/10 transition-colors"
-                      onClick={() => toggleBatchExpansion(batch.batch_id)}
+                      onClick={() => toggleBatchExpansion(batch, batch.documents)}
                     >
                       <td className="px-2 py-2 w-[30%]">{batch.batch_id}</td>
                       <td className=" py-2">
@@ -122,7 +132,7 @@ const OutboundCalls = () => {
                           : 'N/A'}
                       </td>
                     </tr>
-                    {expandedBatchId === batch.batch_id && (
+                    {/* {expandedBatchId === batch.batch_id && (
                       <tr>
                         <td colSpan={5} className="px-4 py-2 bg-slate-200">
                           <table className="table-auto border w-full bg-white text-left">
@@ -162,7 +172,7 @@ const OutboundCalls = () => {
                           </table>
                         </td>
                       </tr>
-                    )}
+                    )} */}
                   </React.Fragment>
                 ))}
               </tbody>
@@ -195,8 +205,9 @@ const OutboundCalls = () => {
           </div>
         )}
 
+        <OutboundCallBatchDetail isOpen={isCallLogModalOpen} onClose={closeCallLogModal} calls={callLogs} batch={batchDetail} />
+
         {/* Call details modal */}
-        <OutboundCallDetailModal isOpen={isDetailModalOpen} onClose={() => setIsDetailModalOpen(false)} call={selectedCall} />
       </div>
     </div>
   );

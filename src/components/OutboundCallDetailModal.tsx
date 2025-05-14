@@ -5,7 +5,7 @@ import { Calendar, FileText, Info, Phone } from 'lucide-react';
 import React, { useRef, useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 
-export interface OutboundCallLog {
+export interface OutboundCallLogDTO {
   _id: string;
   claim_number: string;
   phone: string;
@@ -26,7 +26,7 @@ export interface OutboundCallLog {
 interface OutboundCallDetailModalProps {
   isOpen: boolean;
   onClose: () => void;
-  call?: OutboundCallLog;
+  call?: OutboundCallLogDTO;
 }
 
 const OutboundCallDetailModal: React.FC<OutboundCallDetailModalProps> = ({ isOpen, onClose, call }) => {
