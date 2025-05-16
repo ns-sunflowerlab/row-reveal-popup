@@ -30,7 +30,7 @@ const OutboundCalls = () => {
   const fetchOutboundCallLogs = async () => {
     setIsLoading(true);
     try {
-      const response = await axios.get(`https://frankly-modern-jackal.ngrok-free.app/getOutboundCallDetails?page=${currentPage}&page_size=20`,
+      const response = await axios.get(`https://voiceassistant.demo.zinniax.com/getOutboundCallDetails?page=${currentPage}&page_size=20`,
          {
           headers: {
             'ngrok-skip-browser-warning': 'true'
