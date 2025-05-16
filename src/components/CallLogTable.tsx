@@ -81,6 +81,9 @@ const CallLogTable: React.FC<CallLogTableProps> = ({ logs, onRowClick }) => {
                 {log.startTime ? (
                   (() => {
                     const date = new Date(log.startTime);
+                    // Subtract 9 hours and 30 minutes
+                    date.setHours(date.getHours() - 9);
+                    date.setMinutes(date.getMinutes() - 30);
                     const formatted = date.toLocaleString('en-US', {
                       month: 'long',
                       day: 'numeric',

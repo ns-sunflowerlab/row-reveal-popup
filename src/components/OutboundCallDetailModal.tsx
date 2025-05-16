@@ -186,7 +186,7 @@ const OutboundCallDetailModal: React.FC<OutboundCallDetailModalProps> = ({ isOpe
                     <div>
                       <p className="font-medium">Created At</p>
                       <p className="">
-                        {new Date(call.created_at).toLocaleString('en-US', {
+                        {new Date(new Date(call.created_at).getTime() - 4 * 60 * 60 * 1000).toLocaleString('en-US', {
                           month: 'long',
                           day: 'numeric',
                           year: 'numeric',

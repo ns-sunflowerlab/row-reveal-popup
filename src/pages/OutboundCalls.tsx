@@ -30,7 +30,13 @@ const OutboundCalls = () => {
   const fetchOutboundCallLogs = async () => {
     setIsLoading(true);
     try {
-      const response = await axios.get(`https://voiceassistant.demo.zinniax.com/getOutboundCallDetails?page=${currentPage}&page_size=20`);
+      const response = await axios.get(`https://frankly-modern-jackal.ngrok-free.app/getOutboundCallDetails?page=${currentPage}&page_size=20`,
+         {
+          headers: {
+            'ngrok-skip-browser-warning': 'true'
+          }
+        }
+      );
 
       if (response.data && response.data.outboundCallDetails) {
         const { total_documents, batches } = response.data.outboundCallDetails;
@@ -94,14 +100,16 @@ const OutboundCalls = () => {
                       <td className="px-2 py-2 w-[30%]">{batch.batch_id}</td>
                       <td className=" py-2">
                         {batch.documents[0]?.created_at
-                          ? new Date(batch.documents[0].created_at).toLocaleString('en-US', {
-                              month: 'long',
-                              day: 'numeric',
-                              year: 'numeric',
-                              hour: 'numeric',
-                              minute: '2-digit',
-                              hour12: true
-                            })
+                          ? new Date(
+                            new Date(batch.documents[0].created_at).getTime() - 4 * 60 * 60 * 1000
+                          ).toLocaleString('en-US', {
+                            month: 'long',
+                            day: 'numeric',
+                            year: 'numeric',
+                            hour: 'numeric',
+                            minute: '2-digit',
+                            hour12: true
+                          })
                           : 'N/A'}
                       </td>
                       <td className="py-2">
@@ -121,14 +129,16 @@ const OutboundCalls = () => {
                       <td className="px-2 py-2">{batch.documents[0]?.line_status || 'N/A'}</td>
                       <td className="px-2 py-2">
                         {batch.documents[0]?.completed_at
-                          ? new Date(batch.documents[0].completed_at).toLocaleString('en-US', {
-                              month: 'long',
-                              day: 'numeric',
-                              year: 'numeric',
-                              hour: 'numeric',
-                              minute: '2-digit',
-                              hour12: true
-                            })
+                          ? new Date(
+                            new Date(batch.documents[0].completed_at).getTime() - 4 * 60 * 60 * 1000
+                          ).toLocaleString('en-US', {
+                            month: 'long',
+                            day: 'numeric',
+                            year: 'numeric',
+                            hour: 'numeric',
+                            minute: '2-digit',
+                            hour12: true
+                          })
                           : 'N/A'}
                       </td>
                     </tr>

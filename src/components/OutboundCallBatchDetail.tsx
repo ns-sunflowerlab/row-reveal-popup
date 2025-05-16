@@ -38,14 +38,16 @@ const OutboundCallBatchDetail: React.FC<OutboundCallBatchDetailType> = ({ calls,
               <div>
                 <p className="font-medium">Date</p>
                 <p className="">
-                  {batch?.documents[0]?.created_at
-                    ? new Date(batch?.documents[0].created_at).toLocaleString('en-US', {
-                        month: 'long',
-                        day: 'numeric',
-                        year: 'numeric',
-                        hour: 'numeric',
-                        minute: '2-digit',
-                        hour12: true
+                    {batch?.documents[0]?.created_at
+                    ? new Date(
+                      new Date(batch.documents[0].created_at).getTime() - 4 * 60 * 60 * 1000
+                      ).toLocaleString('en-US', {
+                      month: 'long',
+                      day: 'numeric',
+                      year: 'numeric',
+                      hour: 'numeric',
+                      minute: '2-digit',
+                      hour12: true
                       })
                     : 'N/A'}
                 </p>
@@ -91,7 +93,7 @@ const OutboundCallBatchDetail: React.FC<OutboundCallBatchDetailType> = ({ calls,
                       onClick={() => handleCallRowClick(doc)}
                     >
                       <td className="px-4 py-2">
-                        {new Date(doc.created_at).toLocaleString('en-US', {
+                        {new Date(new Date(doc.created_at).getTime() - 4 * 60 * 60 * 1000).toLocaleString('en-US', {
                           month: 'long',
                           day: 'numeric',
                           year: 'numeric',
