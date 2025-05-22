@@ -31,7 +31,7 @@ const Index = () => {
       );
       if (response.data && Array.isArray(response.data.callDetails)) {
         const apiData = response.data.callDetails.map((call: any) => ({
-          callId: call.id,
+          callId: call.call_id,
           assistantId: call.first_name || 'N/A',
           customerPhone: call.phone,
           direction: (call.line_status = 'inbound'),

@@ -15,7 +15,7 @@ const CallLogTable: React.FC<CallLogTableProps> = ({ logs, onRowClick }) => {
       <Table>
         <TableHeader className="bg-secondary">
           <TableRow className="font-bold">
-            {/* <TableHead className="w-44">Batch ID</TableHead> */}
+            <TableHead className="w-44">Batch ID</TableHead>
             <TableHead className="w-44">Customer Name</TableHead>
             <TableHead className="w-52">Customer Phone Number</TableHead>
             <TableHead className="w-48">Label</TableHead>
@@ -38,6 +38,7 @@ const CallLogTable: React.FC<CallLogTableProps> = ({ logs, onRowClick }) => {
                   </button>
                 </div>
               </TableCell> */}
+              <TableCell>{log.callId}</TableCell>
               <TableCell>
                 <div className="flex items-center gap-1.5 ">{log.assistantId}</div>
               </TableCell>
