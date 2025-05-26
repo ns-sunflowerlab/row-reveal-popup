@@ -15,7 +15,7 @@ const CallLogTable: React.FC<CallLogTableProps> = ({ logs, onRowClick }) => {
       <Table>
         <TableHeader className="bg-secondary">
           <TableRow className="font-bold">
-            <TableHead className="w-44">Batch ID</TableHead>
+            <TableHead className="w-44">Call ID</TableHead>
             <TableHead className="w-44">Customer Name</TableHead>
             <TableHead className="w-52">Customer Phone Number</TableHead>
             <TableHead className="w-48">Label</TableHead>
